@@ -1,0 +1,490 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local runService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
+local camera = workspace.CurrentCamera
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+player.CameraMode = Enum.CameraMode.Classic
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "NPC_Tracker"
+screenGui.Parent = CoreGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 220, 0, 160)
+mainFrame.Position = UDim2.new(0.85, -110, 0.2, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+local shadow = Instance.new("ImageLabel")
+shadow.Name = "Shadow"
+shadow.Size = UDim2.new(1, 30, 1, 30)
+shadow.Position = UDim2.new(0, -15, 0, -15)
+shadow.BackgroundTransparency = 1
+shadow.Image = "rbxassetid://6014261993"
+shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+shadow.ImageTransparency = 0.4
+shadow.ScaleType = Enum.ScaleType.Slice
+shadow.SliceCenter = Rect.new(49, 49, 450, 450)
+shadow.ZIndex = 0
+shadow.Parent = mainFrame
+
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 40))
+})
+gradient.Rotation = 45
+gradient.Parent = mainFrame
+
+local topBar = Instance.new("Frame")
+topBar.Name = "TopBar"
+topBar.Size = UDim2.new(1, 0, 0, 36)
+topBar.BackgroundColor3 = Color3.fromRGB(55, 55, 60)
+topBar.BorderSizePixel = 0
+topBar.Parent = mainFrame
+
+local topGradient = Instance.new("UIGradient")
+topGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(65, 65, 70)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(55, 55, 60))
+})
+topGradient.Rotation = 90
+topGradient.Parent = topBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Size = UDim2.new(1, -40, 1, 0)
+titleLabel.Position = UDim2.new(0, 12, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+titleLabel.Text = "NPC Tracker v2.1"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 15
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = topBar
+
+local statusIcon = Instance.new("Frame")
+statusIcon.Name = "StatusIcon"
+statusIcon.Size = UDim2.new(0, 8, 0, 8)
+statusIcon.Position = UDim2.new(0, -10, 0.5, 0)
+statusIcon.AnchorPoint = Vector2.new(0, 0.5)
+statusIcon.BackgroundColor3 = Color3.fromRGB(220, 70, 70)
+statusIcon.BorderSizePixel = 0
+statusIcon.Parent = titleLabel
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(1, 0)
+statusCorner.Parent = statusIcon
+
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 26, 0, 26)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(220, 70, 70)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Text = "×"
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 20
+closeButton.Parent = topBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(1, 0)
+closeCorner.Parent = closeButton
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = mainFrame
+
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 10)
+topCorner.Parent = topBar
+
+local clipFrame = Instance.new("Frame")
+clipFrame.Name = "ClipFrame"
+clipFrame.Size = UDim2.new(1, 0, 1, -36)
+clipFrame.Position = UDim2.new(0, 0, 0, 36)
+clipFrame.BackgroundTransparency = 1
+clipFrame.ClipsDescendants = true
+clipFrame.Parent = mainFrame
+
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "ContentFrame"
+contentFrame.Size = UDim2.new(1, -20, 1, -20)
+contentFrame.Position = UDim2.new(0, 10, 0, 10)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = clipFrame
+
+local trackButton = Instance.new("TextButton")
+trackButton.Name = "TrackButton"
+trackButton.Size = UDim2.new(1, 0, 0, 42)
+trackButton.Position = UDim2.new(0, 0, 0, 0)
+trackButton.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+trackButton.TextColor3 = Color3.fromRGB(240, 240, 240)
+trackButton.Text = ""
+trackButton.Font = Enum.Font.GothamSemibold
+trackButton.TextSize = 14
+trackButton.Parent = contentFrame
+
+local trackIcon = Instance.new("ImageLabel")
+trackIcon.Name = "TrackIcon"
+trackIcon.Size = UDim2.new(0, 20, 0, 20)
+trackIcon.Position = UDim2.new(0, 10, 0.5, 0)
+trackIcon.AnchorPoint = Vector2.new(0, 0.5)
+trackIcon.BackgroundTransparency = 1
+trackIcon.Image = "rbxassetid://7733658504"
+trackIcon.ImageColor3 = Color3.fromRGB(240, 240, 240)
+trackIcon.Parent = trackButton
+
+local trackLabel = Instance.new("TextLabel")
+trackLabel.Name = "TrackLabel"
+trackLabel.Size = UDim2.new(1, -70, 1, 0)
+trackLabel.Position = UDim2.new(0, 40, 0, 0)
+trackLabel.BackgroundTransparency = 1
+trackLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+trackLabel.Text = "NPC Track: OFF"
+trackLabel.Font = Enum.Font.GothamSemibold
+trackLabel.TextSize = 14
+trackLabel.TextXAlignment = Enum.TextXAlignment.Left
+trackLabel.Parent = trackButton
+
+local trackCorner = Instance.new("UICorner")
+trackCorner.CornerRadius = UDim.new(0, 8)
+trackCorner.Parent = trackButton
+
+local trackStroke = Instance.new("UIStroke")
+trackStroke.Color = Color3.fromRGB(80, 80, 85)
+trackStroke.Thickness = 1
+trackStroke.Parent = trackButton
+
+local noclipButton = Instance.new("TextButton")
+noclipButton.Name = "NoclipButton"
+noclipButton.Size = UDim2.new(1, 0, 0, 42)
+noclipButton.Position = UDim2.new(0, 0, 0, 52)
+noclipButton.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+noclipButton.TextColor3 = Color3.fromRGB(240, 240, 240)
+noclipButton.Text = ""
+noclipButton.Font = Enum.Font.GothamSemibold
+noclipButton.TextSize = 14
+noclipButton.Parent = contentFrame
+
+local noclipIcon = Instance.new("ImageLabel")
+noclipIcon.Name = "NoclipIcon"
+noclipIcon.Size = UDim2.new(0, 20, 0, 20)
+noclipIcon.Position = UDim2.new(0, 10, 0.5, 0)
+noclipIcon.AnchorPoint = Vector2.new(0, 0.5)
+noclipIcon.BackgroundTransparency = 1
+noclipIcon.Image = "rbxassetid://7734053495"
+noclipIcon.ImageColor3 = Color3.fromRGB(240, 240, 240)
+noclipIcon.Parent = noclipButton
+
+local noclipLabel = Instance.new("TextLabel")
+noclipLabel.Name = "NoclipLabel"
+noclipLabel.Size = UDim2.new(1, -70, 1, 0)
+noclipLabel.Position = UDim2.new(0, 40, 0, 0)
+noclipLabel.BackgroundTransparency = 1
+noclipLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+noclipLabel.Text = "Noclip: OFF"
+noclipLabel.Font = Enum.Font.GothamSemibold
+noclipLabel.TextSize = 14
+noclipLabel.TextXAlignment = Enum.TextXAlignment.Left
+noclipLabel.Parent = noclipButton
+
+local noclipCorner = Instance.new("UICorner")
+noclipCorner.CornerRadius = UDim.new(0, 8)
+noclipCorner.Parent = noclipButton
+
+local noclipStroke = Instance.new("UIStroke")
+noclipStroke.Color = Color3.fromRGB(80, 80, 85)
+noclipStroke.Thickness = 1
+noclipStroke.Parent = noclipButton
+
+local function makeDraggable(frame)
+    local dragging, dragInput, dragStart, startPos
+    
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = frame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input == dragInput then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+makeDraggable(mainFrame)
+
+local function createButtonEffect(button)
+    local originalColor = button.BackgroundColor3
+    local hoverColor = Color3.fromRGB(originalColor.R * 255 + 20, originalColor.G * 255 + 20, originalColor.B * 255 + 20)
+    local pressColor = Color3.fromRGB(originalColor.R * 255 - 10, originalColor.G * 255 - 10, originalColor.B * 255 - 10)
+    
+    button.MouseEnter:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
+    end)
+    
+    button.MouseLeave:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = originalColor}):Play()
+    end)
+    
+    button.MouseButton1Down:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = pressColor}):Play()
+    end)
+    
+    button.MouseButton1Up:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = hoverColor}):Play()
+    end)
+end
+
+createButtonEffect(trackButton)
+createButtonEffect(noclipButton)
+
+local function getClosestNPC()
+    local closestNPC = nil
+    local closestDistance = math.huge
+    
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+        return nil
+    end
+    
+    local playerPosition = player.Character.HumanoidRootPart.Position
+    
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("Model") then
+            local humanoid = object:FindFirstChild("Humanoid") or object:FindFirstChildWhichIsA("Humanoid")
+            local hrp = object:FindFirstChild("HumanoidRootPart") or object.PrimaryPart
+            
+            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" then
+                local isPlayer = false
+                for _, pl in ipairs(Players:GetPlayers()) do
+                    if pl.Character == object then
+                        isPlayer = true
+                        break
+                    end
+                end
+                
+                if not isPlayer then
+                    local distance = (hrp.Position - playerPosition).Magnitude
+                    if distance < closestDistance then
+                        closestDistance = distance
+                        closestNPC = object
+                    end
+                end
+            end
+        end
+    end
+    
+    return closestNPC
+end
+
+local npcTrack = false
+local lastTarget = nil
+local trackLoop
+local lastNotifiedNPC = nil
+
+local function setNPCTrack(enabled)
+    npcTrack = enabled
+    trackLabel.Text = "NPC Track: " .. (enabled and "ON" or "OFF")
+    statusIcon.BackgroundColor3 = enabled and Color3.fromRGB(70, 200, 70) or Color3.fromRGB(220, 70, 70)
+    
+    if enabled then
+        TweenService:Create(trackButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 110, 60)}):Play()
+        TweenService:Create(trackStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 140, 80)}):Play()
+        TweenService:Create(trackIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(180, 255, 180)}):Play()
+        
+        trackLoop = runService.RenderStepped:Connect(function()
+            local npc = getClosestNPC()
+            
+            if npc and npc:FindFirstChild("Humanoid") then
+                local npcHumanoid = npc:FindFirstChild("Humanoid")
+                
+                if npcHumanoid.Health > 0 then
+                    camera.CameraSubject = npcHumanoid
+                    
+                    if lastTarget ~= npc then
+                        lastTarget = npc
+                        lastNotifiedNPC = npc
+                        
+                        StarterGui:SetCore("SendNotification", {
+                            Title = "Tracking",
+                            Text = npc.Name,
+                            Duration = 2
+                        })
+                    end
+                else
+                    if lastTarget == npc then
+                        StarterGui:SetCore("SendNotification", {
+                            Title = "NPC Died",
+                            Text = npc.Name,
+                            Duration = 2
+                        })
+                        
+                        lastTarget = nil
+                        
+                        if player.Character and player.Character:FindFirstChild("Humanoid") then
+                            camera.CameraSubject = player.Character.Humanoid
+                        end
+                    end
+                end
+            else
+                if lastTarget ~= nil then
+                    if player.Character and player.Character:FindFirstChild("Humanoid") then
+                        camera.CameraSubject = player.Character.Humanoid
+                    end
+                    
+                    lastTarget = nil
+                end
+            end
+        end)
+    else
+        TweenService:Create(trackButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 60, 65)}):Play()
+        TweenService:Create(trackStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 80, 85)}):Play()
+        TweenService:Create(trackIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(240, 240, 240)}):Play()
+        
+        if trackLoop then
+            trackLoop:Disconnect()
+            trackLoop = nil
+        end
+        
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            camera.CameraSubject = player.Character.Humanoid
+        end
+        
+        lastTarget = nil
+    end
+end
+
+local noclipEnabled = false
+local noclipLoop
+
+local function setNoclip(enabled)
+    noclipEnabled = enabled
+    noclipLabel.Text = "Noclip: " .. (enabled and "ON" or "OFF")
+    
+    if enabled then
+        TweenService:Create(noclipButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 110, 60)}):Play()
+        TweenService:Create(noclipStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 140, 80)}):Play()
+        TweenService:Create(noclipIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(180, 255, 180)}):Play()
+        
+        StarterGui:SetCore("SendNotification", {
+            Title = "Noclip",
+            Text = "Enabled",
+            Duration = 2
+        })
+        
+        noclipLoop = runService.Stepped:Connect(function()
+            if player.Character then
+                for _, part in pairs(player.Character:GetDescendants()) do
+                    if part:IsA("BasePart") and part.CanCollide then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        TweenService:Create(noclipButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 60, 65)}):Play()
+        TweenService:Create(noclipStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 80, 85)}):Play()
+        TweenService:Create(noclipIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(240, 240, 240)}):Play()
+        
+        StarterGui:SetCore("SendNotification", {
+            Title = "Noclip",
+            Text = "Disabled",
+            Duration = 2
+        })
+        
+        if noclipLoop then
+            noclipLoop:Disconnect()
+            noclipLoop = nil
+        end
+        
+        if player.Character then
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end
+
+trackButton.MouseButton1Click:Connect(function()
+    setNPCTrack(not npcTrack)
+end)
+
+noclipButton.MouseButton1Click:Connect(function()
+    setNoclip(not noclipEnabled)
+end)
+
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.P then
+        setNPCTrack(not npcTrack)
+    elseif input.KeyCode == Enum.KeyCode.N then
+        setNoclip(not noclipEnabled)
+    end
+end)
+
+local function cleanup()
+    if noclipEnabled then
+        setNoclip(false)
+    end
+    
+    if noclipLoop then
+        noclipLoop:Disconnect()
+    end
+    
+    if npcTrack then
+        setNPCTrack(false)
+    end
+    
+    if trackLoop then
+        trackLoop:Disconnect()
+    end
+    
+    local npcTrackScript = _G.npcTrackScript
+    
+    if screenGui and screenGui.Parent then
+        screenGui:Destroy()
+    end
+    
+    if npcTrack and npcTrackScript and typeof(npcTrackScript) == "Instance" then
+        npcTrackScript.Disabled = false
+    end
+end
+
+player.CharacterAdded:Connect(function(character)
+    if noclipEnabled and noclipLoop then
+        task.wait(0.5)
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
