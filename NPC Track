@@ -1,16 +1,25 @@
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local runService = game:GetService("RunService")
+local RunService = game:GetService("RunService")
 local StarterGui = game:GetService("StarterGui")
 local UserInputService = game:GetService("UserInputService")
-local camera = workspace.CurrentCamera
 local TweenService = game:GetService("TweenService")
-local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+if not player then
+	Players.PlayerAdded:Wait()
+	player = Players.LocalPlayer
+end
+
+local camera = workspace.CurrentCamera
+
+local CoreGui = player:FindFirstChild("PlayerGui") or StarterGui
 
 player.CameraMode = Enum.CameraMode.Classic
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "NPC_Tracker"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = CoreGui
 
 local mainFrame = Instance.new("Frame")
@@ -36,8 +45,8 @@ shadow.Parent = mainFrame
 
 local gradient = Instance.new("UIGradient")
 gradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 40))
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(45, 45, 50)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 40))
 })
 gradient.Rotation = 45
 gradient.Parent = mainFrame
@@ -63,7 +72,7 @@ titleLabel.Size = UDim2.new(1, -40, 1, 0)
 titleLabel.Position = UDim2.new(0, 12, 0, 0)
 titleLabel.BackgroundTransparency = 1
 titleLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
-titleLabel.Text = "NPC Tracker v2.1"
+titleLabel.Text = "NPC Tracker v2.15"
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextSize = 15
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -204,15 +213,32 @@ noclipStroke.Color = Color3.fromRGB(80, 80, 85)
 noclipStroke.Thickness = 1
 noclipStroke.Parent = noclipButton
 
+local healthLabelGui = Instance.new("BillboardGui")
+healthLabelGui.Name = "NPCHealthLabelGui"
+healthLabelGui.Size = UDim2.new(0, 100, 0, 20)
+healthLabelGui.StudsOffset = Vector3.new(0, 3, 0)
+healthLabelGui.AlwaysOnTop = true
+healthLabelGui.Enabled = true
+
+local healthLabel = Instance.new("TextLabel")
+healthLabel.Name = "HealthLabel"
+healthLabel.Size = UDim2.new(1, 0, 1, 0)
+healthLabel.BackgroundTransparency = 1
+healthLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+healthLabel.TextScaled = true
+healthLabel.TextXAlignment = Enum.TextXAlignment.Center
+healthLabel.TextYAlignment = Enum.TextYAlignment.Center
+healthLabel.Parent = healthLabelGui
+
 local function makeDraggable(frame)
     local dragging, dragInput, dragStart, startPos
-    
+
     frame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = frame.Position
-            
+
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -220,13 +246,13 @@ local function makeDraggable(frame)
             end)
         end
     end)
-    
+
     frame.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
-    
+
     UserInputService.InputChanged:Connect(function(input)
         if dragging and input == dragInput then
             local delta = input.Position - dragStart
@@ -241,19 +267,19 @@ local function createButtonEffect(button)
     local originalColor = button.BackgroundColor3
     local hoverColor = Color3.fromRGB(originalColor.R * 255 + 20, originalColor.G * 255 + 20, originalColor.B * 255 + 20)
     local pressColor = Color3.fromRGB(originalColor.R * 255 - 10, originalColor.G * 255 - 10, originalColor.B * 255 - 10)
-    
+
     button.MouseEnter:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
     end)
-    
+
     button.MouseLeave:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = originalColor}):Play()
     end)
-    
+
     button.MouseButton1Down:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = pressColor}):Play()
     end)
-    
+
     button.MouseButton1Up:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = hoverColor}):Play()
     end)
@@ -265,18 +291,18 @@ createButtonEffect(noclipButton)
 local function getClosestNPC()
     local closestNPC = nil
     local closestDistance = math.huge
-    
+
     if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
         return nil
     end
-    
+
     local playerPosition = player.Character.HumanoidRootPart.Position
-    
+
     for _, object in ipairs(workspace:GetDescendants()) do
         if object:IsA("Model") then
             local humanoid = object:FindFirstChild("Humanoid") or object:FindFirstChildWhichIsA("Humanoid")
             local hrp = object:FindFirstChild("HumanoidRootPart") or object.PrimaryPart
-            
+
             if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" then
                 local isPlayer = false
                 for _, pl in ipairs(Players:GetPlayers()) do
@@ -285,7 +311,7 @@ local function getClosestNPC()
                         break
                     end
                 end
-                
+
                 if not isPlayer then
                     local distance = (hrp.Position - playerPosition).Magnitude
                     if distance < closestDistance then
@@ -296,44 +322,78 @@ local function getClosestNPC()
             end
         end
     end
-    
+
     return closestNPC
+end
+
+local function updateHealthLabel(npc)
+    if not npc or not npc:FindFirstChild("Humanoid") then
+        healthLabelGui.Enabled = false
+        return
+    end
+
+    local humanoid = npc:FindFirstChild("Humanoid")
+    local hrp = npc:FindFirstChild("HumanoidRootPart") or npc.PrimaryPart
+
+    if not hrp then
+        healthLabelGui.Enabled = false
+        return
+    end
+
+    healthLabelGui.Parent = hrp
+    healthLabelGui.Enabled = true
+
+    healthLabel.Text = humanoid.Health .. " / " .. humanoid.MaxHealth
 end
 
 local npcTrack = false
 local lastTarget = nil
 local trackLoop
 local lastNotifiedNPC = nil
+local healthConnection
 
 local function setNPCTrack(enabled)
     npcTrack = enabled
     trackLabel.Text = "NPC Track: " .. (enabled and "ON" or "OFF")
     statusIcon.BackgroundColor3 = enabled and Color3.fromRGB(70, 200, 70) or Color3.fromRGB(220, 70, 70)
-    
+
     if enabled then
         TweenService:Create(trackButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 110, 60)}):Play()
         TweenService:Create(trackStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 140, 80)}):Play()
         TweenService:Create(trackIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(180, 255, 180)}):Play()
-        
-        trackLoop = runService.RenderStepped:Connect(function()
+
+        trackLoop = RunService.RenderStepped:Connect(function()
             local npc = getClosestNPC()
-            
+
             if npc and npc:FindFirstChild("Humanoid") then
                 local npcHumanoid = npc:FindFirstChild("Humanoid")
-                
+
                 if npcHumanoid.Health > 0 then
                     camera.CameraSubject = npcHumanoid
-                    
+
                     if lastTarget ~= npc then
+                        if healthConnection then
+                            healthConnection:Disconnect()
+                            healthConnection = nil
+                        end
+
                         lastTarget = npc
                         lastNotifiedNPC = npc
-                        
+
+                        updateHealthLabel(npc)
+
+                        healthConnection = npcHumanoid:GetPropertyChangedSignal("Health"):Connect(function()
+                            updateHealthLabel(npc)
+                        end)
+
                         StarterGui:SetCore("SendNotification", {
                             Title = "Tracking",
                             Text = npc.Name,
                             Duration = 2
                         })
                     end
+
+                    updateHealthLabel(npc)
                 else
                     if lastTarget == npc then
                         StarterGui:SetCore("SendNotification", {
@@ -341,9 +401,15 @@ local function setNPCTrack(enabled)
                             Text = npc.Name,
                             Duration = 2
                         })
-                        
+
+                        if healthConnection then
+                            healthConnection:Disconnect()
+                            healthConnection = nil
+                        end
+
+                        healthLabelGui.Enabled = false
                         lastTarget = nil
-                        
+
                         if player.Character and player.Character:FindFirstChild("Humanoid") then
                             camera.CameraSubject = player.Character.Humanoid
                         end
@@ -354,7 +420,13 @@ local function setNPCTrack(enabled)
                     if player.Character and player.Character:FindFirstChild("Humanoid") then
                         camera.CameraSubject = player.Character.Humanoid
                     end
-                    
+
+                    if healthConnection then
+                        healthConnection:Disconnect()
+                        healthConnection = nil
+                    end
+
+                    healthLabelGui.Enabled = false
                     lastTarget = nil
                 end
             end
@@ -363,16 +435,23 @@ local function setNPCTrack(enabled)
         TweenService:Create(trackButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 60, 65)}):Play()
         TweenService:Create(trackStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 80, 85)}):Play()
         TweenService:Create(trackIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(240, 240, 240)}):Play()
-        
+
         if trackLoop then
             trackLoop:Disconnect()
             trackLoop = nil
         end
-        
+
+        if healthConnection then
+            healthConnection:Disconnect()
+            healthConnection = nil
+        end
+
+        healthLabelGui.Enabled = false
+
         if player.Character and player.Character:FindFirstChild("Humanoid") then
             camera.CameraSubject = player.Character.Humanoid
         end
-        
+
         lastTarget = nil
     end
 end
@@ -383,19 +462,19 @@ local noclipLoop
 local function setNoclip(enabled)
     noclipEnabled = enabled
     noclipLabel.Text = "Noclip: " .. (enabled and "ON" or "OFF")
-    
+
     if enabled then
         TweenService:Create(noclipButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 110, 60)}):Play()
         TweenService:Create(noclipStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 140, 80)}):Play()
         TweenService:Create(noclipIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(180, 255, 180)}):Play()
-        
+
         StarterGui:SetCore("SendNotification", {
             Title = "Noclip",
             Text = "Enabled",
             Duration = 2
         })
-        
-        noclipLoop = runService.Stepped:Connect(function()
+
+        noclipLoop = RunService.Stepped:Connect(function()
             if player.Character then
                 for _, part in pairs(player.Character:GetDescendants()) do
                     if part:IsA("BasePart") and part.CanCollide then
@@ -408,18 +487,18 @@ local function setNoclip(enabled)
         TweenService:Create(noclipButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 60, 65)}):Play()
         TweenService:Create(noclipStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(80, 80, 85)}):Play()
         TweenService:Create(noclipIcon, TweenInfo.new(0.3), {ImageColor3 = Color3.fromRGB(240, 240, 240)}):Play()
-        
+
         StarterGui:SetCore("SendNotification", {
             Title = "Noclip",
             Text = "Disabled",
             Duration = 2
         })
-        
+
         if noclipLoop then
             noclipLoop:Disconnect()
             noclipLoop = nil
         end
-        
+
         if player.Character then
             for _, part in pairs(player.Character:GetDescendants()) do
                 if part:IsA("BasePart") then
@@ -454,25 +533,31 @@ local function cleanup()
     if noclipEnabled then
         setNoclip(false)
     end
-    
+
     if noclipLoop then
         noclipLoop:Disconnect()
     end
-    
+
     if npcTrack then
         setNPCTrack(false)
     end
-    
+
     if trackLoop then
         trackLoop:Disconnect()
     end
-    
+
+    if healthConnection then
+        healthConnection:Disconnect()
+    end
+
+    healthLabelGui.Enabled = false
+
     local npcTrackScript = _G.npcTrackScript
-    
+
     if screenGui and screenGui.Parent then
         screenGui:Destroy()
     end
-    
+
     if npcTrack and npcTrackScript and typeof(npcTrackScript) == "Instance" then
         npcTrackScript.Disabled = false
     end
