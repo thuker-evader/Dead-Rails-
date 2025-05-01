@@ -1,56 +1,131 @@
 # Malware Testing Resources [Educational Use Only]
 
-> **DISCLAIMER:** This repository is strictly for **educational and research purposes only**. Engaging in malicious activity, deploying malware in unauthorized environments, or violating terms of service and laws is strictly prohibited. Always use isolated, controlled lab environments (like VMs or sandboxes) for any malware analysis or testing.
+> **DISCLAIMER:** This repository is intended for **educational and research purposes only**. Do not use malware or tools in any unauthorized environment. Always test in isolated, virtualized labs. The creator is not responsible for any misuse.
+
+---
+
+## Table of Contents
+
+- [About](#about)
+- [Malware Sample Repositories](#malware-sample-repositories)
+- [Malware Analysis Sandboxes](#malware-analysis-sandboxes)
+- [Online Scanners & Tools](#online-scanners--tools)
+- [Educational GitHub Repositories](#educational-github-repositories)
+- [Useful Tools for Analysis](#useful-tools-for-analysis)
+- [Recommended Courses & Labs](#recommended-courses--labs)
+- [Best Practices](#best-practices)
+- [License](#license)
+- [Contributing](#contributing)
 
 ---
 
 ## About
 
-This repository provides a curated list of trusted websites, tools, and GitHub repositories for safely testing, analyzing, or learning about malware. These resources are commonly used by cybersecurity students, researchers, and malware analysts.
+This repository contains a list of the best and safest platforms for downloading, testing, and analyzing malware in controlled environments. It is useful for:
+
+- Cybersecurity students
+- Malware analysts
+- Reverse engineers
+- Threat researchers
 
 ---
 
-## Recommended Safe Malware Testing Sites
+## Malware Sample Repositories
 
-| Site | Purpose | Notes |
-|------|---------|-------|
-| [MalwareBazaar](https://bazaar.abuse.ch/) | Download malware samples | Maintained by abuse.ch, includes SHA256 hashes and tags |
-| [Any.Run](https://any.run/) | Interactive malware sandbox | Free tier available, browser-based, real-time analysis |
-| [VirusTotal](https://www.virustotal.com/) | Scan suspicious files | Aggregates results from 70+ AV engines |
-| [Hybrid Analysis](https://www.hybrid-analysis.com/) | Behavioral malware analysis | Hosted by CrowdStrike, sandbox reports |
-| [TheZoo](https://github.com/ytisf/theZoo) | GitHub repo with binaries | Malware samples for researchers, use responsibly |
-| [CAPE Sandbox](https://cape.contextis.com/) | Malware sandbox & analysis | Community sandbox, supports various formats |
-| [VX Underground](https://www.vx-underground.org/) | Malware collections & research papers | Historical and modern malware samples, educational content |
-| [Unpac.me](https://www.unpac.me/) | Malware unpacking and analysis | Great for obfuscated binaries |
-| [InQuest Labs](https://labs.inquest.net/) | Threat research & file analysis | Offers static/dynamic analysis tools |
-| [Joe Sandbox](https://www.joesandbox.com/) | Deep malware analysis | Limited free access, very detailed reports |
+| Source | Description |
+|--------|-------------|
+| [MalwareBazaar](https://bazaar.abuse.ch/) | Public malware sample database by abuse.ch |
+| [VX Underground](https://www.vx-underground.org/) | One of the largest malware and research archives |
+| [TheZoo](https://github.com/ytisf/theZoo) | GitHub repo of real malware binaries |
+| [MalShare](https://malshare.com/) | Community-driven malware repository |
+| [Triage Samples](https://tria.ge/samples) | Malware samples from Hatching Triage |
+| [AVCaesar](https://avcaesar.malware.lu/) | Malware repository by CERT Malware.lu |
+| [Das Malwerk](https://dasmalwerk.eu/) | Malware samples released weekly |
 
 ---
 
-## Caution and Best Practices
+## Malware Analysis Sandboxes
 
-- Always use **virtual machines (VMs)** when analyzing malware (e.g., VirtualBox, VMware).
-- Consider using **network isolation** (no internet) or **controlled virtual networks**.
-- Tools like **INetSim**, **Wireshark**, **ProcMon**, and **x64dbg** can assist in safe malware analysis.
-- Never run live samples on your host system.
+| Tool | Notes |
+|------|-------|
+| [Any.Run](https://any.run/) | Real-time, interactive sandbox |
+| [Hybrid Analysis](https://www.hybrid-analysis.com/) | Rich, detailed behavior reports |
+| [CAPE Sandbox](https://cape.contextis.com/) | Fork of Cuckoo, supports config extraction |
+| [Triage](https://tria.ge/) | Advanced sandbox with actor attribution |
+| [Joe Sandbox](https://www.joesandbox.com/) | High-fidelity analysis (limited free tier) |
+| [Cuckoo Sandbox](https://github.com/cuckoosandbox/cuckoo) | Open-source malware sandboxing system |
 
 ---
 
-## Educational GitHub Repos
+## Online Scanners & Tools
 
-- [TheZoo](https://github.com/ytisf/theZoo) – Malware binaries for research.
-- [Malware Source Code Collection](https://github.com/fabrimagic72/malware-sources) – Collection of open-source malware.
-- [Cuckoo Sandbox](https://github.com/cuckoosandbox/cuckoo) – Automated malware analysis system.
-- [Awesome Malware Analysis](https://github.com/rshipp/awesome-malware-analysis) – Curated list of analysis tools and articles.
+| Tool | Function |
+|------|----------|
+| [VirusTotal](https://www.virustotal.com/) | Multi-AV scanner and behavioral analysis |
+| [Unpac.me](https://www.unpac.me/) | Unpacks packed or obfuscated binaries |
+| [ThreatExpert](http://www.threatexpert.com/) | Archived behavioral analysis reports |
+| [ReversingLabs](https://www.reversinglabs.com/) | Deep static and threat analysis |
+| [InQuest Labs](https://labs.inquest.net/) | Static file dissection and hunting |
+| [MetaDefender](https://metadefender.opswat.com/) | Secure file scanning and sanitization |
+| [Intezer Analyze](https://analyze.intezer.com/) | Code reuse detection and analysis |
+
+---
+
+## Educational GitHub Repositories
+
+| Repo | Description |
+|------|-------------|
+| [Awesome Malware Analysis](https://github.com/rshipp/awesome-malware-analysis) | Curated list of tools, papers, and sandboxes |
+| [TheZoo](https://github.com/ytisf/theZoo) | Malware binaries for education |
+| [Cuckoo Sandbox](https://github.com/cuckoosandbox/cuckoo) | Malware sandboxing system |
+| [IDA Free Scripts](https://github.com/techbliss/ida-free-script) | Python tools for IDA Free |
+| [Malware Techniques](https://github.com/0xRick/malware-techniques) | Modern malware techniques & evasion |
+| [Reverse Engineering Tools](https://github.com/cugu/awesome-forensics) | Tools for memory & file analysis |
+
+---
+
+## Useful Tools for Analysis
+
+- **Process Monitor (ProcMon)** – Real-time file, registry, process monitoring
+- **Wireshark** – Packet capturing and analysis
+- **x64dbg** – Open-source debugger
+- **PEStudio** – Static binary inspection
+- **Sysmon** – Logs detailed system activity
+- **IDA Free / Ghidra / Binary Ninja** – Disassemblers and reverse engineering
+- **ApateDNS / INetSim** – Simulate DNS & internet services
+
+---
+
+## Recommended Courses & Labs
+
+| Resource | Notes |
+|---------|-------|
+| [Malware Unicorn RE101](https://malwareunicorn.org/workshops/re101.html) | Beginner-friendly reversing course |
+| [Practical Malware Analysis](https://www.nostarch.com/malware) | Classic textbook with labs |
+| [Honeynet Challenges](https://www.honeynet.org/challenges/) | Real-world reverse engineering tasks |
+| [Open Security Training](https://opensecuritytraining.info/) | Free RE & exploitation courses |
+| [CyberDefenders Labs](https://cyberdefenders.org/labs/) | Free labs on malware, DFIR, and more |
+
+---
+
+## Best Practices
+
+- Always analyze samples in **isolated environments** (VMs, no host sharing).
+- Use **snapshots** before running any malware.
+- Disable network access unless necessary and controlled.
+- Log everything: process creation, registry access, file writes.
+- Never share samples carelessly—label clearly and store safely.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. Refer to each linked site or repo for their respective licenses and usage policies.
+MIT License. This repo provides references only; please review and respect each linked platform’s terms.
 
 ---
 
 ## Contributing
 
-Feel free to contribute more **educational resources** or **safe testing environments** by submitting a pull request.
+Got more sources or tools? Feel free to open a pull request or file an issue.
+
+---
