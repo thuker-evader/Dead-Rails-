@@ -4,8 +4,8 @@
 
 <h1 align="center">Welcome to the Malware Testing Lab</h1>
 
-> **Hello tester!**  
-> If youve came here, you're probably curious about how malware works or maybe you're gearing up to tear apart some binaries in a virtual machine. Either way: **respect**. Just know this isn’t for the faint hearted. We're diving into the underworld of code.
+> **Hey, brave soul!**  
+> If you've landed here, you're probably curious about how malware works—or maybe you're gearing up to tear apart some binaries in a virtual machine. Either way: **respect**. Just know this isn’t for the faint-hearted. We're diving into the underworld of code.
 
 ---
 
@@ -26,7 +26,7 @@ Please, **don’t be that person** who runs ransomware on their main laptop.
 
 ## So, What’s This Repo About?
 
-I’ve collected the best tools, sites, and sandboxes that real malware analysts use every day. No fluff, no shady links just the essentials to:
+I’ve collected the best tools, sites, and sandboxes that real malware analysts use every day. No fluff, no shady links—just the essentials to:
 - Download real malware samples
 - Analyze them in a safe lab
 - Learn techniques used in the wild
